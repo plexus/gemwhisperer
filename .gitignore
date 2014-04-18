@@ -5,3 +5,5 @@ log/*.log
 .bundle
 bin/*
 notes
+.env
+.#*
