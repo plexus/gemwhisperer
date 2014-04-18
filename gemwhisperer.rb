@@ -89,7 +89,7 @@ post '/hook' do
   Log.info "shorted url: #{short_url}"
 
   suffix     = " | gem releases by Plexus"
-  max_length = 140 - suffix.length - 1
+  max_length = 140 - suffix.length - 2
 
   whisper_text = "#{whisper.name} (#{whisper.version}): #{short_url} #{whisper.info}"
   whisper_text = whisper_text.chars.take(max_length).join + '…' if whisper_text.length > max_length
