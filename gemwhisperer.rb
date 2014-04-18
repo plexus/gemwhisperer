@@ -85,14 +85,15 @@ post '/hook' do
 
   Log.info "created whisper: #{whisper.inspect}"
 
-  short_url = Net::HTTP.get(URI.parse("http://is.gd/create.php?format=simple&url=#{URI.escape(whisper.url)}"))
-  Log.info "shorted url: #{short_url}"
+  # short_url = Net::HTTP.get(URI.parse("http://is.gd/create.php?format=simple&url=#{URI.escape(whisper.url)}"))
+  # Log.info "shorted url: #{short_url}"
 
   suffix     = " | gems by @plexus"
-  max_length = 140 - suffix.length - 3
+  max_length = 140 - suffix.length - 23  # Twitter counts 23 chars per link
 
-  whisper_text = "#{whisper.name} #{whisper.version} has been released! #{short_url} #{whisper.info}"
+  whisper_text = "#{whisper.name} #{whisper.version} has been released! %s #{whisper.info}"
   whisper_text = whisper_text.chars.take(max_length).join + '…' if whisper_text.length > max_length
+  whisper_text = whisper_text % whisper.url
 
   $stderr.puts((whisper_text + suffix).inspect)
   $stderr.puts((whisper_text + suffix).length)
