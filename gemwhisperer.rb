@@ -89,10 +89,13 @@ post '/hook' do
   Log.info "shorted url: #{short_url}"
 
   suffix     = " | gem releases by Plexus"
-  max_length = 140 - suffix.length - 2
+  max_length = 140 - suffix.length - 3
 
   whisper_text = "#{whisper.name} (#{whisper.version}): #{short_url} #{whisper.info}"
   whisper_text = whisper_text.chars.take(max_length).join + '…' if whisper_text.length > max_length
+
+  $stderr.puts((whisper_text + suffix).inspect)
+  $stderr.puts((whisper_text + suffix).length)
 
   response = Twitter.update(whisper_text + suffix)
   Log.info "TWEETED! #{response}"
