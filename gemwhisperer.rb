@@ -85,19 +85,37 @@ post '/hook' do
 
   Log.info "created whisper: #{whisper.inspect}"
 
-  # short_url = Net::HTTP.get(URI.parse("http://is.gd/create.php?format=simple&url=#{URI.escape(whisper.url)}"))
-  # Log.info "shorted url: #{short_url}"
+  if hash['metadata']['changelog'] && hash['metadata']['changelog'].length > 20
+    whisper_text = whisper_text_changelog(whisper, hash['metadata']['changelog'])
+  else
+    whisper_text = whisper_text_generic(whisper)
+  end
 
+  $stderr.puts(whisper_text.inspect)
+  $stderr.puts(whisper_text.length)
+
+  response = Twitter.update(whisper_text)
+  Log.info "TWEETED! #{response}"
+end
+
+def whisper_text_generic(whisper)
   suffix     = " | gems by @plexus"
-  max_length = 140 - suffix.length - 23  # Twitter counts 23 chars per link
+  max_length = 140 - suffix.length - 23  # Twitter counts 21-23 chars per link
 
   whisper_text = "#{whisper.name} #{whisper.version} has been released! %s #{whisper.info}"
-  whisper_text = whisper_text.chars.take(max_length).join + '…' if whisper_text.length > max_length
-  whisper_text = whisper_text % whisper.url
+  whisper_text = truncate(whisper_text) % whisper.url
 
-  $stderr.puts((whisper_text + suffix).inspect)
-  $stderr.puts((whisper_text + suffix).length)
+  whisper_text + suffix
+end
 
-  response = Twitter.update(whisper_text + suffix)
-  Log.info "TWEETED! #{response}"
+def whisper_text_changelog(whisper, changelog)
+  truncate("#{whisper.name} #{whisper.version} released! %s #{changelog}") % whisper.url
+end
+
+def truncate(str, max_length)
+  if str.length > max_length
+    str.chars.take(max_length).join + '…'
+  else
+    str
+  end
 end

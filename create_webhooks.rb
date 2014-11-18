@@ -1,5 +1,8 @@
 require 'rubygems'
 require 'gems'
+require 'pp'
+
+TARGET = 'http://plexus-gemwhisperer.herokuapp.com/hook'
 
 def create_hooks(target)
   Gems.gems.each do |gem|
@@ -16,6 +19,7 @@ def remove_all_hooks
   end
 end
 
-create_hooks 'http://plexus-gemwhisperer.herokuapp.com/hook'
+remove_all_hooks
+create_hooks TARGET
 
-p Gems.web_hooks
+pp Gems.web_hooks
