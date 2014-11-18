@@ -109,7 +109,7 @@ def whisper_text_generic(whisper)
 end
 
 def whisper_text_changelog(whisper, changelog)
-  truncate("#{whisper.name} #{whisper.version} released! %s #{changelog}") % whisper.url
+  truncate("#{whisper.name} #{whisper.version} released! %s #{changelog.gsub(/\s+/, ' ')}") % whisper.url
 end
 
 def truncate(str, max_length)
