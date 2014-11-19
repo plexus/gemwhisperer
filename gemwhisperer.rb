@@ -105,7 +105,7 @@ def whisper_text_generic(whisper)
   max_length = 140 - suffix.length - 23  # Twitter counts 21-23 chars per link
 
   whisper_text = "#{whisper.name} #{whisper.version} has been released! %s #{whisper.info}"
-  whisper_text = truncate(whisper_text) % whisper.url
+  whisper_text = truncate(whisper_text, max_length) % whisper.url
 
   whisper_text + suffix
 end
@@ -114,7 +114,7 @@ def whisper_text_changelog(whisper, changelog)
   truncate("#{whisper.name} #{whisper.version} released! %s #{changelog.gsub(/\s+/, ' ')}") % whisper.url
 end
 
-def truncate(str, max_length)
+def truncate(str, max_length = 140-23)
   if str.length > max_length
     str.chars.take(max_length).join + '…'
   else
