@@ -85,8 +85,10 @@ post '/hook' do
 
   Log.info "created whisper: #{whisper.inspect}"
 
-  if hash['metadata']['changelog'] && hash['metadata']['changelog'].length > 20
-    whisper_text = whisper_text_changelog(whisper, hash['metadata']['changelog'])
+  changelog = try_find_changelog(hash['name'], hash['version'])
+
+  if changelog
+    whisper_text = whisper_text_changelog(whisper, changelog)
   else
     whisper_text = whisper_text_generic(whisper)
   end
@@ -118,4 +120,14 @@ def truncate(str, max_length)
   else
     str
   end
+end
+
+def try_find_changelog(name, version)
+  markdown = Net::HTTP.get(URI("https://raw.githubusercontent.com/plexus/#{name}/master/CHANGELOG.md"))
+  versions = markdown.split(/(?=###\s*[\d\.]+\n)/).each_with_object({}) do |section, hsh|
+    version = section.each_line.first[/[\d\.]+/]
+    log     = section.each_line.drop(1).join.strip
+    hsh[version] = log
+  end
+  versions[version]
 end
