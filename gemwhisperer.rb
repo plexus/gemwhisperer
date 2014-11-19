@@ -125,9 +125,9 @@ end
 def try_find_changelog(name, version)
   markdown = Net::HTTP.get(URI("https://raw.githubusercontent.com/plexus/#{name}/master/CHANGELOG.md"))
   versions = markdown.split(/(?=###\s*[\d\.]+\n)/).each_with_object({}) do |section, hsh|
-    version = section.each_line.first[/[\d\.]+/]
-    log     = section.each_line.drop(1).join.strip
-    hsh[version] = log
+    ver = section.each_line.first[/[\d\.]+/]
+    log = section.each_line.drop(1).join.strip
+    hsh[ver] = log
   end
   versions[version]
 end
